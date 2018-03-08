@@ -69,6 +69,10 @@ For more information, please refer to <http://unlicense.org/>
 
 /* --------------------------------------------------------------- */
 
+
+#define AUXSPI_CS 0
+ 
+
 /*
  0 GPFSEL0   GPIO Function Select 0
  1 GPFSEL1   GPIO Function Select 1
@@ -4276,6 +4280,7 @@ static void _spiRXBits(
    }
 }
 
+#if AUX_SPI_CS
 static void spiACS(int channel, int on)
 {
    int gpio;
@@ -4288,6 +4293,7 @@ static void spiACS(int channel, int on)
    }
    myGpioWrite(gpio, on);
 }
+#endif
 
 static void spiGoA(
    unsigned speed,    /* bits per second */
@@ -4350,7 +4356,9 @@ static void spiGoA(
 
    auxReg[AUX_SPI0_CNTL1_REG] = AUXSPI_CNTL1_MSB_FIRST(rxmsbf);
 
+#if AUXSPI_CS
    spiACS(channel, cs);
+#endif
 
    while ((txCnt < count) || (rxCnt < count))
    {
@@ -4389,7 +4397,9 @@ static void spiGoA(
 
    while ((auxReg[AUX_SPI0_STAT_REG] & AUXSPI_STAT_BUSY)) ;
 
+#if AUXSPI_CS
    spiACS(channel, !cs);
+#endif
 }
 
 static void spiGoS(
@@ -4560,6 +4570,7 @@ static void spiInit(uint32_t flags)
       old_spi_cntl0 = auxReg[AUX_SPI0_CNTL0_REG];
       old_spi_cntl1 = auxReg[AUX_SPI0_CNTL1_REG];
 
+#if AUXSPI_CS
       /* manually control auxiliary SPI chip selects */
 
       if (!(resvd&1))
@@ -4579,6 +4590,7 @@ static void spiInit(uint32_t flags)
          myGpioSetMode(PI_ASPI_CE2,  PI_OUTPUT);
          myGpioWrite(PI_ASPI_CE2, !(cspols&4));
       }
+#endif
 
       /* set gpios to SPI mode */
 
