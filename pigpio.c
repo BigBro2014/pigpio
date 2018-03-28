@@ -4304,7 +4304,8 @@ static void spiGoA(
 {
    int cs;
    char bit_ir[4] = {1, 0, 0, 1}; /* read on rising edge */
-   char bit_or[4] = {0, 1, 1, 0}; /* write on rising edge */
+   // char bit_or[4] = {0, 1, 1, 0}; /* write on rising edge */
+   char bit_or[4] = {1, 0, 0, 1}; /* write on rising edge */
    char bit_ic[4] = {0, 0, 1, 1}; /* invert clock */
 
    int mode, bitlen, txmsbf, rxmsbf, channel;
